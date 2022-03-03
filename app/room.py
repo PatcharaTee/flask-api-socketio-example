@@ -62,7 +62,9 @@ def create():
 def list():
     db = get_db()
 
-    rooms = db.execute("SELECT name, locked, owner_id FROM room").fetchall()
+    rooms = db.execute(
+        "SELECT id, name, locked, owner_id FROM room"
+    ).fetchall()
     rooms = [dict(i) for i in rooms]
 
     return jsonify({'rooms': rooms, 'status': 200})
@@ -78,8 +80,9 @@ def close():
 
     json_body = request.get_json()
 
-    if 'room_id' in json_body:
+    if 'room_id' in json_body and 'owner_id' in json_body:
         room_id = json_body['room_id']
+        owner_id = json_body['owner_id']
     else:
         return jsonify({'message': 'Bad request.', 'status': 400})
 
@@ -91,10 +94,13 @@ def close():
     if room is None:
         return jsonify({'message': 'Bad request.', 'status': 400})
 
-    db.execute(
-        "DELETE FROM room WHERE id = ?",
-        (room_id,)
-    )
-    db.commit()
+    if owner_id == room['owner_id']:
+        db.execute(
+            "DELETE FROM room WHERE id = ?",
+            (room_id,)
+        )
+        db.commit()
+    else:
+        return jsonify({'message': 'Access denied.', 'status': 401})
 
     return jsonify({'message': 'Ok.', 'status': 200})

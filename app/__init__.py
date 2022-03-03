@@ -14,7 +14,7 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='e9270d8e788b56b06af20918fffd99ec',
         JWT_SECRET_KEY='4b6e55781c8147123bb3e093d6fe04ed',
-        JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=1)
+        JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=1),
         DATABASE=os.path.join(app.instance_path, 'app.sqlite'),
     )
 
