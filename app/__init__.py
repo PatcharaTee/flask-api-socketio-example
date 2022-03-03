@@ -1,11 +1,17 @@
-from datetime import timedelta
 from flask_jwt_extended import JWTManager
+from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask import Flask
+
+from datetime import timedelta
 import os
 
-from app.db import DB
-from . import auth, room
+from . import db, auth, room
+
+# Flask extensions
+cors = CORS()
+jwt = JWTManager()
+socketio = SocketIO()
 
 
 def create_app(test_config=None):
@@ -31,10 +37,14 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    DB(app)
-    CORS(app, supports_credentials=True,
-         resources={r'/*': {'origins': ['http://127.0.0.1:5000']}})
-    JWTManager(app)
+    db.init_app(app)
+    cors.init_app(
+        app,
+        supports_credentials=True,
+        resources={r'/*': {'origins': ['http://127.0.0.1']}}
+    )
+    jwt.init_app(app)
+    socketio.init_app(app, async_mode='threading')
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(room.bp)
