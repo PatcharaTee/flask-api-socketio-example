@@ -1,0 +1,6 @@
+Flask
+Flask-Cors
+Flask-Socketio
+Flask-Mail
+Flask-JWT-Extended
+Eventlet
