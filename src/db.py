@@ -5,7 +5,7 @@ import click
 
 
 class DB():
-    
+
     def __init__(self) -> None:
         return
 
