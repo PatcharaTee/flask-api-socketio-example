@@ -2,19 +2,24 @@ from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask import Flask
+from src.db import DB
 
 from datetime import timedelta
 import os
 
-from . import db, auth, room
+from .auth import bp as auth_api
+from .room import bp as room_api
 
 # Flask extensions
+db = DB()
 cors = CORS()
 jwt = JWTManager()
 socketio = SocketIO()
 
+# Import Socket.IO events so that they are registered with Flask-SocketIO
+from . import events as _
 
-def create_app(test_config=None):
+def create_app():
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
@@ -24,29 +29,31 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.instance_path, 'app.sqlite'),
     )
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
-
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
+    
+    # Initialize flask extensions
     db.init_app(app)
     cors.init_app(
         app,
         supports_credentials=True,
-        resources={r'/*': {'origins': ['http://127.0.0.1']}}
+        resources={r'/*': {'origins': '*'}}
     )
     jwt.init_app(app)
-    socketio.init_app(app, async_mode='threading')
+    socketio.init_app(
+        app,
+        async_handlers=True,
+        async_mode="eventlet",
+        cors_credentials=True,
+        cors_allowed_origins='*',
+        logger=True,
+        engineio_logger=True
+    )
 
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(room.bp)
-
+    app.register_blueprint(auth_api)
+    app.register_blueprint(room_api)
+    
     return app

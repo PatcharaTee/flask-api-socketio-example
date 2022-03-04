@@ -10,7 +10,7 @@ from flask import (
 from flask_jwt_extended import (
     create_access_token, jwt_required
 )
-from app.db import get_db
+from src.db import get_db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -22,7 +22,7 @@ def register():
 
     username = request.form['username']
     password = request.form['password']
-
+    
     db = get_db()
 
     try:
@@ -44,7 +44,7 @@ def login():
 
     username = request.form['username']
     password = request.form['password']
-
+    
     db = get_db()
 
     user = db.execute(
@@ -57,12 +57,14 @@ def login():
     elif not check_password_hash(user['password'], password):
         return jsonify({'message': 'Incorrect password.', 'status': 200})
 
+    user_id = user['id']
+
     session.clear()
-    session['user_id'] = user['id']
+    session['user_id'] = user_id
 
     access_token = create_access_token(user['id'])
 
-    return jsonify({'message': 'Ok.', 'access_token': access_token, 'status': 200})
+    return jsonify({'message': 'Ok.', 'id': user_id, 'access_token': access_token, 'status': 200})
 
 
 @bp.route('/logout', methods=['POST'])
@@ -79,7 +81,8 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db().execute(
+        db = get_db()
+        g.user = db.execute(
             "SELECT * FROM user WHERE id = ?",
             (user_id,)
         )

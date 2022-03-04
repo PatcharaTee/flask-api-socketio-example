@@ -3,4 +3,6 @@ Flask-Cors
 Flask-Socketio
 Flask-Mail
 Flask-JWT-Extended
-Eventlet
+Eventlet==0.30.2
+Gunicorn==20.1.0
+pytz==2021.3

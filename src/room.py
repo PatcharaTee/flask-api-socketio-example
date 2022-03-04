@@ -6,7 +6,7 @@ from flask import (
 from flask_jwt_extended import (
     jwt_required, get_jwt_identity
 )
-from app.db import get_db
+from src.db import get_db
 
 bp = Blueprint('room', __name__, url_prefix='/room')
 

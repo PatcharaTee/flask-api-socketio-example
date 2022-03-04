@@ -4,9 +4,14 @@ import sqlite3
 import click
 
 
-def init_app(app):
-    app.teardown_appcontext(close_db)
-    app.cli.add_command(init_db_command)
+class DB():
+    
+    def __init__(self) -> None:
+        return
+
+    def init_app(self, app):
+        app.teardown_appcontext(close_db)
+        app.cli.add_command(init_db_command)
 
 
 def get_db():
