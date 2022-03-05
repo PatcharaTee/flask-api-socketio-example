@@ -44,11 +44,13 @@ def handle_leave_room(json):
 def handle_send_message(json):
     sid = request.sid
     room_id = json['room_id']
+    name = json['name']
+    sender_id = json['sender_id']
     message = json['message']
 
     print('User', sid, 'send message to room', room_id, '.')
 
     timestamp = datetime.now(pytz.timezone('Asia/Bangkok')).timestamp()
 
-    emit('new_msg', {'msg': message, 'timestamp': timestamp},
+    emit('new_message', {'name': name, 'sender_id': sender_id, 'msg': message, 'timestamp': timestamp},
          broadcast=True, room=room_id)

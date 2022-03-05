@@ -1,23 +1,27 @@
 from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask import Flask
-from src.db import DB
 
 from datetime import timedelta
 import os
 
-from .auth import bp as auth_api
-from .room import bp as room_api
-
 # Flask extensions
-db = DB()
 cors = CORS()
+db = SQLAlchemy()
 jwt = JWTManager()
 socketio = SocketIO()
 
+# Import DB models so that they are registered with SQLAlchemy
+from . import models as _
+
 # Import Socket.IO events so that they are registered with Flask-SocketIO
 from . import events as _
+
+from .auth import bp as auth_api
+from .room import bp as room_api
+
 
 def create_app():
     # create and configure the app
@@ -26,7 +30,9 @@ def create_app():
         SECRET_KEY='e9270d8e788b56b06af20918fffd99ec',
         JWT_SECRET_KEY='4b6e55781c8147123bb3e093d6fe04ed',
         JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=1),
-        DATABASE=os.path.join(app.instance_path, 'app.sqlite'),
+        SQLALCHEMY_DATABASE_URI="postgresql://tijswukmrpxjhg:02f1a8e92041b515ab89ca6dc992a5435a02bd42ba2943e8872c0a94a827d91d@ec2-34-231-183-74.compute-1.amazonaws.com:5432/dfntls9ij79eqs",
+        SQLALCHEMY_ECHO=True,
+        SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
     # ensure the instance folder exists
@@ -40,7 +46,7 @@ def create_app():
     cors.init_app(
         app,
         supports_credentials=True,
-        resources={r'/*': {'origins': '*'}}
+        resources={r'/*': {'origins': ['http://localhost:4200']}}
     )
     jwt.init_app(app)
     socketio.init_app(
