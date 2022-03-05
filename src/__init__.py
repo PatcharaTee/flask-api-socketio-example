@@ -46,7 +46,7 @@ def create_app():
     cors.init_app(
         app,
         supports_credentials=True,
-        resources={r'/*': {'origins': ['http://localhost:4200']}}
+        resources={r'/*': {'origins': ['http://localhost:4200', 'https://flask-api-socketio-example-fe.herokuapp.com']}}
     )
     jwt.init_app(app)
     socketio.init_app(
@@ -54,7 +54,7 @@ def create_app():
         async_handlers=True,
         async_mode="eventlet",
         cors_credentials=True,
-        cors_allowed_origins='*',
+        cors_allowed_origins=['http://localhost:4200', 'https://flask-api-socketio-example-fe.herokuapp.com'],
         logger=True,
         engineio_logger=True
     )
