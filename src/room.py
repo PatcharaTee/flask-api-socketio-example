@@ -1,9 +1,9 @@
+from sqlalchemy.exc import IntegrityError
 from flask import (
     Blueprint,
     request,
     jsonify
 )
-from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import (
     jwt_required, get_jwt_identity
 )

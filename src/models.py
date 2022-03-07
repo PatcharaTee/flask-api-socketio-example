@@ -13,6 +13,14 @@ class User(db.Model):
         self.username = username
         self.password = password
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'password': self.password
+        }
+
 
 class Room(db.Model):
 
@@ -32,10 +40,24 @@ class Room(db.Model):
 
     @property
     def serialize(self):
-        """Return object data in easily serializable format"""
         return {
             'id': self.id,
             'owner_id': self.owner_id,
             'name': self.name,
-            'locked': self.locked,
+            'locked': self.locked
         }
+
+
+class TokenBlocklist(db.Model):
+
+    """The TokenBlocklist model."""
+    __tablename__ = 'token_block_list'
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(db.Integer, nullable=False)
+    jti = db.Column(db.String(36), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+
+    def __init__(self, owner_id, jti, created_at):
+        self.owner_id = owner_id
+        self.jti = jti
+        self.created_at = created_at

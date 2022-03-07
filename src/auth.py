@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security import (
     check_password_hash,
     generate_password_hash
@@ -7,12 +8,15 @@ from flask import (
     request,
     jsonify
 )
-from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import (
-    create_access_token, jwt_required
+    create_access_token, jwt_required,
+    get_jwt_identity, get_jwt
 )
-from . import db
-from .models import User
+from . import db, jwt
+from .models import TokenBlocklist, User
+
+from datetime import datetime
+from datetime import timezone
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -61,4 +65,27 @@ def login():
 @bp.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
+    jti = get_jwt()["jti"]
+    user_id = get_jwt_identity()
+    now = datetime.now(timezone.utc)
+
+    blocked_token = TokenBlocklist(user_id, jti, now)
+
+    db.session.add(blocked_token)
+    db.session.commit()
+
     return jsonify({'message': 'Ok.', 'status': 200}), 200
+
+
+@bp.route('/verify_token', methods=['GET'])
+@jwt_required()
+def verify():
+    return jsonify({'message': 'Ok.', 'status': 200}), 200
+
+
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload):
+    jti = jwt_payload["jti"]
+    token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
+
+    return token is not None
