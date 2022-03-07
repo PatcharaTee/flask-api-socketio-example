@@ -1,10 +1,11 @@
-# flask-api-socketio-example
+# flask-api-socketio-example-backend
 
-Example real-time chatapp (backend) project for flask api and flask socket-io
+Example of realtime chat-app project for flask api, socket-io
 
 # Requirement
 
 - python >= 3.9.5
+- SQL Database
 
 #### Extra Requirement for windows system
 
@@ -24,8 +25,7 @@ Example real-time chatapp (backend) project for flask api and flask socket-io
 > python3 -m venv venv
 > . venv/bin/activate
 > pip install -r requirements.txt
-> flask init-db
-> export PORT=80
+> export PORT=8000
 > gunicorn -k eventlet -w 1 -b :$PORT app:app
 ```
 
@@ -34,7 +34,6 @@ Example real-time chatapp (backend) project for flask api and flask socket-io
 > python3 -m venv venv
 > . venv/bin/activate
 > pip install -r requirements.txt
-> flask init-db
-> export PORT=80
+> export PORT=8000
 > gunicorn -k eventlet -w 1 -b :$PORT app:app
 ```
