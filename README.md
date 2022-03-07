@@ -4,8 +4,10 @@ Example of realtime chat-app project for flask api, socket-io
 
 # Requirement
 
-- python >= 3.9.5
+- Python >= 3.9.5
 - SQL Database
+
+** Required package for this project list in requirements.txt
 
 #### Extra Requirement for windows system
 
@@ -19,7 +21,7 @@ Example of realtime chat-app project for flask api, socket-io
 
 # Usage
 
-## Windows
+### Windows
 ```bash
 > wsl
 > python3 -m venv venv
@@ -29,7 +31,7 @@ Example of realtime chat-app project for flask api, socket-io
 > gunicorn -k eventlet -w 1 -b :$PORT app:app
 ```
 
-## MacOS/Linux
+### MacOS/Linux
 ```bash
 > python3 -m venv venv
 > . venv/bin/activate
@@ -37,3 +39,7 @@ Example of realtime chat-app project for flask api, socket-io
 > export PORT=8000
 > gunicorn -k eventlet -w 1 -b :$PORT app:app
 ```
+
+# Other
+- [Flask](https://flask.palletsprojects.com/en/2.0.x/)
+- [WSL](https://docs.microsoft.com/en-us/windows/wsl/install)
